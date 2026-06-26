@@ -1,0 +1,92 @@
+{% extends 'landlords/base.html' %}
+{% block title %}Edit Property – Find Your Home Kenya{% endblock %}
+{% block page_title %}Edit Property{% endblock %}
+{% block content %}
+<div style="max-width:760px;">
+  <div style="margin-bottom:20px;">
+    <a href="{% url 'landlords:my_properties' %}" style="color:var(--white-40);font-size:0.85rem;text-decoration:none;">
+      <i class="fas fa-arrow-left" style="margin-right:6px;"></i>Back to My Listings
+    </a>
+  </div>
+  <div class="card">
+    <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--white-10);">
+      <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Edit: {{ property.title }}</div>
+      <div style="font-size:0.78rem;color:#ffc800;margin-top:4px;"><i class="fas fa-exclamation-circle"></i> After editing, your listing will be re-submitted for admin approval.</div>
+    </div>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Property Title *</label>
+          <input type="text" name="title" value="{{ property.title }}" required style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Property Type *</label>
+          <select name="property_type" required style="width:100%;padding:12px 16px;border-radius:12px;background:var(--navy-3);border:1px solid var(--border);color:var(--white);font-size:0.9rem;">
+            <option value="bedsitter" {% if property.property_type == 'bedsitter' %}selected{% endif %}>Bedsitter</option>
+            <option value="single" {% if property.property_type == 'single' %}selected{% endif %}>Single Room</option>
+            <option value="1bedroom" {% if property.property_type == '1bedroom' %}selected{% endif %}>1 Bedroom</option>
+            <option value="2bedroom" {% if property.property_type == '2bedroom' %}selected{% endif %}>2 Bedroom</option>
+            <option value="3bedroom" {% if property.property_type == '3bedroom' %}selected{% endif %}>3 Bedroom</option>
+            <option value="4bedroom" {% if property.property_type == '4bedroom' %}selected{% endif %}>4+ Bedroom</option>
+            <option value="studio" {% if property.property_type == 'studio' %}selected{% endif %}>Studio</option>
+            <option value="bungalow" {% if property.property_type == 'bungalow' %}selected{% endif %}>Bungalow</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Monthly Rent (KSh) *</label>
+          <input type="number" name="price" value="{{ property.price }}" min="1" required style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Location / Estate *</label>
+          <input type="text" name="location" value="{{ property.location }}" required style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Contact Phone *</label>
+          <input type="tel" name="contact_phone" value="{{ property.contact_phone }}" required style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">WhatsApp Number</label>
+          <input type="tel" name="contact_whatsapp" value="{{ property.contact_whatsapp }}" style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Full Address *</label>
+          <textarea name="address" rows="2" required style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;resize:vertical;">{{ property.address }}</textarea>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Directions</label>
+          <textarea name="directions" rows="3" style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;resize:vertical;">{{ property.directions }}</textarea>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Description *</label>
+          <textarea name="description" rows="4" required style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;resize:vertical;">{{ property.description }}</textarea>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Amenities (comma-separated)</label>
+          <input type="text" name="amenities" value="{{ property.amenities }}" style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Add More Photos (optional)</label>
+          <input type="file" name="photos" accept="image/*" multiple style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white-70);font-size:0.85rem;"/>
+        </div>
+      </div>
+      {% if property.photos.all %}
+      <div style="margin-top:20px;">
+        <div style="font-size:0.78rem;color:var(--white-40);margin-bottom:12px;">Current Photos</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          {% for photo in property.photos.all %}
+          <div style="position:relative;">
+            <img src="{{ photo.image.url }}" style="width:100px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border);"/>
+            {% if photo.is_main %}<div style="position:absolute;bottom:4px;left:4px;background:var(--cyan);color:var(--navy);font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">MAIN</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      <div style="margin-top:24px;display:flex;gap:12px;">
+        <button type="submit" style="padding:13px 32px;border-radius:50px;background:var(--cyan);color:var(--navy);font-weight:700;font-size:0.9rem;border:none;cursor:pointer;font-family:'Syne',sans-serif;">Save & Submit for Approval</button>
+        <a href="{% url 'landlords:my_properties' %}" style="padding:13px 24px;border-radius:50px;background:var(--white-10);color:var(--white-70);border:1px solid var(--border);text-decoration:none;font-size:0.9rem;display:inline-flex;align-items:center;">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

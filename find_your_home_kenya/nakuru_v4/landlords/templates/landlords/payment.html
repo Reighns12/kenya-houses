@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Activate Account – Find Your Home Kenya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy:#050d1a;--cyan:#00e5ff;--border:rgba(0,229,255,0.18);--white:white;--white-70:rgba(255,255,255,0.7);--white-40:rgba(255,255,255,0.4);--white-10:rgba(255,255,255,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(0,80,160,0.25),transparent 70%);pointer-events:none;}
+    .pay-box{background:rgba(10,22,40,0.96);border:1px solid var(--border);border-radius:24px;padding:44px;width:100%;max-width:500px;backdrop-filter:blur(16px);position:relative;z-index:1;}
+    .logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;}
+    .logo-icon{width:34px;height:34px;border-radius:9px;background:var(--cyan);display:flex;align-items:center;justify-content:center;}
+    .logo-icon i{color:var(--navy);}
+    .logo span{color:var(--cyan);}
+    h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:8px;}
+    .sub{color:var(--white-40);font-size:0.85rem;margin-bottom:28px;line-height:1.6;}
+    .amount-badge{background:rgba(0,229,255,0.08);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px;}
+    .amount-val{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:var(--cyan);}
+    .amount-note{font-size:0.8rem;color:var(--white-40);margin-top:4px;}
+    .till-box{background:rgba(0,229,255,0.06);border:2px dashed var(--border);border-radius:12px;padding:18px;text-align:center;margin-bottom:20px;}
+    .till-label{font-size:0.75rem;color:var(--white-40);margin-bottom:4px;}
+    .till-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:0.1em;color:var(--cyan);}
+    .steps-small{margin-bottom:20px;}
+    .step-s{display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:0.82rem;color:var(--white-70);}
+    .step-s-num{width:20px;height:20px;flex-shrink:0;border-radius:50%;background:rgba(0,229,255,0.15);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--cyan);}
+    .form-group{margin-bottom:14px;}
+    .form-label{display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;font-weight:500;}
+    .form-input{width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;}
+    .form-input:focus{outline:none;border-color:var(--cyan);}
+    .btn-pay{width:100%;padding:14px;border-radius:50px;background:var(--cyan);color:var(--navy);font-weight:700;font-size:0.95rem;border:none;cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-pay:hover{background:#33ebff;transform:translateY(-1px);}
+    .btn-manual{width:100%;padding:11px;border-radius:50px;background:transparent;border:1px solid var(--border);color:var(--white-70);font-size:0.85rem;cursor:pointer;margin-top:10px;transition:all 0.2s;}
+    .btn-manual:hover{border-color:var(--cyan);color:var(--cyan);}
+    #status-msg{display:none;text-align:center;padding:14px;border-radius:12px;margin-top:14px;font-size:0.85rem;}
+    #manual-section{display:none;margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--white-10);}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--navy);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+  </style>
+</head>
+<body>
+<div class="pay-box">
+  <div class="logo">
+    <div class="logo-icon"><i class="fas fa-building"></i></div>
+    Find Your <span>Home Kenya</span>
+  </div>
+  <h2>Activate Your Listing Account</h2>
+  <p class="sub">Pay once to activate your account and start listing your properties. Tenants will contact you directly.</p>
+
+  <div class="amount-badge">
+    <div class="till-label">One-time activation fee</div>
+    <div class="amount-val">KSh {{ amount }}</div>
+    <div class="amount-note">Pay once · Post unlimited properties · No monthly fees</div>
+  </div>
+
+  {% if till_number %}
+  <div class="till-box">
+    <div class="till-label">M-Pesa Till Number</div>
+    <div class="till-num">{{ till_number }}</div>
+    <div style="font-size:0.75rem;color:var(--white-40);margin-top:2px;">Find Your Home Kenya</div>
+  </div>
+  {% endif %}
+
+  <div class="steps-small">
+    <div class="step-s"><div class="step-s-num">1</div> Enter your M-Pesa number and click Pay Now</div>
+    <div class="step-s"><div class="step-s-num">2</div> M-Pesa prompt appears — enter your PIN</div>
+    <div class="step-s"><div class="step-s-num">3</div> Account activates instantly — start listing!</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">M-Pesa Phone Number</label>
+    <input type="tel" id="phone-input" class="form-input" placeholder="07XX XXX XXX" value="{{ landlord.phone }}"/>
+  </div>
+
+  <button class="btn-pay" id="pay-btn" onclick="initPayment()">
+    <i class="fas fa-mobile-alt"></i> Pay KSh {{ amount }} via M-Pesa
+  </button>
+  <button class="btn-manual" onclick="showManual()">I've already paid — enter M-Pesa code</button>
+
+  <div id="status-msg"></div>
+  <div id="manual-section">
+    <p style="font-size:0.8rem;color:var(--white-40);margin-bottom:10px;">Enter the M-Pesa code from your SMS confirmation:</p>
+    <div class="form-group">
+      <input type="text" id="mpesa-code" class="form-input" placeholder="e.g. RGX1234ABC" style="text-transform:uppercase;"/>
+    </div>
+    <button class="btn-pay" onclick="verifyManual()" style="background:var(--white-10);color:var(--white);border:1px solid var(--border);">Verify Payment</button>
+  </div>
+</div>
+
+<script>
+  let paymentId = null;
+  let pollInterval = null;
+  function showStatus(msg, type) {
+    const el = document.getElementById('status-msg');
+    el.style.display = 'block';
+    el.style.background = type==='success'?'rgba(0,229,255,0.1)':type==='error'?'rgba(255,80,80,0.1)':'rgba(255,200,0,0.1)';
+    el.style.border = type==='success'?'1px solid rgba(0,229,255,0.3)':type==='error'?'1px solid rgba(255,80,80,0.3)':'1px solid rgba(255,200,0,0.3)';
+    el.style.color = type==='success'?'var(--cyan)':type==='error'?'#ff6b6b':'#ffc800';
+    el.innerHTML = msg;
+  }
+  async function initPayment() {
+    const phone = document.getElementById('phone-input').value.trim();
+    if (!phone) { showStatus('Enter your phone number.', 'error'); return; }
+    const btn = document.getElementById('pay-btn');
+    btn.innerHTML = '<span class="spinner"></span> Sending...'; btn.disabled = true;
+    const res = await fetch('/payments/initiate/', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':'{{ csrf_token }}'},
+      body:`phone=${encodeURIComponent(phone)}&payment_type=landlord&email={{ landlord.email }}`
+    });
+    const data = await res.json();
+    if (data.success) {
+      paymentId = data.payment_id;
+      showStatus('<i class="fas fa-mobile-alt"></i> Check your phone and enter your M-Pesa PIN.', 'warning');
+      btn.innerHTML = '<span class="spinner"></span> Waiting...';
+      pollInterval = setInterval(() => pollPayment(data.checkout_request_id), 5000);
+    } else if (data.show_manual) {
+      paymentId = data.payment_id;
+      showStatus(`Pay KSh ${data.amount} to till ${data.till_number} manually, then enter your M-Pesa code.`, 'warning');
+      document.getElementById('manual-section').style.display = 'block';
+      btn.innerHTML = '<i class="fas fa-mobile-alt"></i> Pay KSh {{ amount }} via M-Pesa'; btn.disabled = false;
+    } else {
+      showStatus(data.error || 'Something went wrong.', 'error');
+      btn.innerHTML = '<i class="fas fa-mobile-alt"></i> Pay KSh {{ amount }} via M-Pesa'; btn.disabled = false;
+    }
+  }
+  async function pollPayment(checkoutId) {
+    const res = await fetch('/payments/check/', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':'{{ csrf_token }}'},
+      body:`payment_id=${paymentId}&checkout_request_id=${checkoutId}`
+    });
+    const data = await res.json();
+    if (data.confirmed) {
+      clearInterval(pollInterval);
+      showStatus('<i class="fas fa-check-circle"></i> Payment confirmed! Redirecting...', 'success');
+      setTimeout(() => window.location.href = '{% url "landlords:dashboard" %}', 1500);
+    }
+  }
+  async function verifyManual() {
+    const code = document.getElementById('mpesa-code').value.trim();
+    if (!code) { showStatus('Enter your M-Pesa code.', 'error'); return; }
+    const res = await fetch('/payments/manual-verify/', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':'{{ csrf_token }}'},
+      body:`payment_id=${paymentId}&mpesa_code=${encodeURIComponent(code)}`
+    });
+    const data = await res.json();
+    if (data.confirmed) {
+      showStatus('<i class="fas fa-check-circle"></i> Verified! Redirecting...', 'success');
+      setTimeout(() => window.location.href = '{% url "landlords:dashboard" %}', 1500);
+    } else if (data.pending_admin) {
+      // Show waiting screen
+      document.getElementById('payment-form').style.display = 'none';
+      document.getElementById('waiting-screen').style.display = 'block';
+    } else { showStatus(data.error || 'Could not verify.', 'error'); }
+  }
+  function showManual() {
+    document.getElementById('manual-section').style.display = 'block';
+    if (!paymentId) {
+      fetch('/payments/initiate/', {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':'{{ csrf_token }}'},
+        body:`phone={{ landlord.phone }}&payment_type=landlord&email={{ landlord.email }}`
+      }).then(r=>r.json()).then(d=>{ if(d.payment_id) paymentId=d.payment_id; });
+    }
+  }
+</script>
+</body>
+</html>

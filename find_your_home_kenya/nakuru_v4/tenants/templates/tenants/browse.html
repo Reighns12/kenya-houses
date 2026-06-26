@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Browse Houses – Find Your Home Kenya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{
+      --navy:#050d1a;--navy-2:#0a1628;--navy-3:#0f2040;
+      --cyan:#00e5ff;--border:rgba(0,229,255,0.18);--cyan-glow:rgba(0,229,255,0.12);
+      --white:#fff;--white-70:rgba(255,255,255,0.7);--white-40:rgba(255,255,255,0.4);
+      --white-10:rgba(255,255,255,0.08);--card-bg:rgba(15,32,64,0.9);--radius:16px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;
+      background:radial-gradient(ellipse 70% 50% at 50% 20%,rgba(0,80,160,0.2),transparent 70%);
+      pointer-events:none;z-index:0;}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+        padding:16px 40px;background:rgba(5,13,26,0.95);border-bottom:1px solid var(--border);
+        backdrop-filter:blur(12px);}
+    .logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-size:1.2rem;
+          font-weight:800;color:var(--white);text-decoration:none;}
+    .logo-icon{width:32px;height:32px;border-radius:8px;background:var(--cyan);
+               display:flex;align-items:center;justify-content:center;}
+    .logo-icon i{color:var(--navy);font-size:0.85rem;}
+    .logo span{color:var(--cyan);}
+    .nav-links{display:flex;gap:10px;align-items:center;}
+    .btn-nav{padding:9px 20px;border-radius:50px;font-size:0.85rem;font-weight:600;
+             text-decoration:none;transition:all 0.2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .btn-outline-nav{background:transparent;border:1.5px solid var(--border);color:var(--white-70);}
+    .btn-outline-nav:hover{border-color:var(--cyan);color:var(--cyan);}
+    .btn-cyan{background:var(--cyan);color:var(--navy);font-weight:700;}
+    .btn-cyan:hover{background:#33ebff;}
+
+    /* MAIN */
+    .page{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:36px 24px;}
+
+    /* HEADER */
+    .page-header{text-align:center;margin-bottom:36px;}
+    .page-header h1{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:10px;}
+    .page-header h1 span{color:var(--cyan);}
+    .page-header p{color:var(--white-40);font-size:0.95rem;max-width:500px;margin:0 auto;}
+
+    /* NOTICE BANNER */
+    .notice-banner{display:flex;align-items:center;gap:12px;padding:14px 20px;
+                   background:rgba(0,229,255,0.06);border:1px solid var(--border);
+                   border-radius:12px;margin-bottom:28px;font-size:0.85rem;color:var(--white-70);}
+    .notice-banner i{color:var(--cyan);font-size:1rem;flex-shrink:0;}
+    .notice-banner strong{color:var(--cyan);}
+
+    /* SEARCH */
+    .search-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;
+                padding:20px;background:var(--card-bg);border:1px solid var(--border);
+                border-radius:16px;margin-bottom:28px;backdrop-filter:blur(12px);}
+    .search-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:160px;}
+    .search-group label{font-size:0.72rem;color:var(--white-40);text-transform:uppercase;letter-spacing:0.05em;font-weight:600;}
+    .search-select,.search-input{padding:11px 14px;border-radius:10px;background:rgba(255,255,255,0.06);
+      border:1px solid var(--border);color:var(--white);font-size:0.88rem;font-family:'DM Sans',sans-serif;}
+    .search-select option{background:var(--navy-2);}
+    .search-select:focus,.search-input:focus{outline:none;border-color:var(--cyan);}
+    .btn-search{padding:11px 24px;border-radius:10px;background:var(--cyan);color:var(--navy);
+                font-weight:700;font-size:0.88rem;border:none;cursor:pointer;white-space:nowrap;
+                transition:all 0.2s;align-self:flex-end;}
+    .btn-search:hover{background:#33ebff;}
+
+    /* RESULTS */
+    .results-info{margin-bottom:20px;color:var(--white-40);font-size:0.88rem;}
+    .results-info strong{color:var(--white);}
+
+    /* GRID */
+    .prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+
+    /* CARD */
+    .prop-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);
+               overflow:hidden;transition:all 0.25s;display:block;text-decoration:none;color:var(--white);}
+    .prop-card:hover{transform:translateY(-4px);border-color:rgba(0,229,255,0.4);
+                     box-shadow:0 12px 40px rgba(0,229,255,0.1);}
+    .prop-img{height:200px;background:linear-gradient(135deg,var(--navy-3),var(--cyan-glow));
+              display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+    .prop-img img{width:100%;height:100%;object-fit:cover;}
+    .prop-img i{font-size:2.5rem;color:rgba(0,229,255,0.2);}
+    .prop-body{padding:16px;}
+    .prop-tag{display:inline-block;padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;
+              background:rgba(0,229,255,0.1);border:1px solid var(--border);color:var(--cyan);
+              margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;}
+    .prop-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px;
+                white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .prop-price{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--cyan);margin-bottom:4px;}
+    .prop-price span{font-size:0.75rem;color:var(--white-40);font-weight:400;font-family:'DM Sans',sans-serif;}
+
+    /* LOCKED INFO */
+    .locked-info{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--white-40);
+                 margin-bottom:14px;padding:8px 10px;background:rgba(255,255,255,0.04);
+                 border-radius:8px;border:1px dashed rgba(255,255,255,0.1);}
+    .locked-info i{color:rgba(0,229,255,0.4);}
+
+    /* SELECT BUTTON */
+    .btn-select{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+                padding:12px;border-radius:50px;background:var(--cyan);color:var(--navy);
+                font-weight:700;font-size:0.88rem;border:none;cursor:pointer;
+                text-decoration:none;transition:all 0.2s;font-family:'Syne',sans-serif;}
+    .btn-select:hover{background:#33ebff;transform:translateY(-1px);}
+
+    /* EMPTY */
+    .empty-state{text-align:center;padding:60px 20px;grid-column:1/-1;}
+    .empty-state i{font-size:3rem;color:var(--white-40);margin-bottom:16px;display:block;}
+    .empty-state h3{font-family:'Syne',sans-serif;margin-bottom:8px;}
+    .empty-state p{color:var(--white-40);font-size:0.88rem;}
+
+    /* SUBSCRIBE CTA */
+    .cta-strip{background:linear-gradient(135deg,var(--navy-3),rgba(0,229,255,0.06));
+               border:1px solid var(--border);border-radius:20px;padding:32px;
+               text-align:center;margin-top:48px;}
+    .cta-strip h3{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:8px;}
+    .cta-strip h3 span{color:var(--cyan);}
+    .cta-strip p{color:var(--white-40);font-size:0.9rem;margin-bottom:24px;}
+    .cta-strip .price-tag{display:inline-block;font-family:'Syne',sans-serif;font-size:2.5rem;
+                          font-weight:800;color:var(--cyan);margin-bottom:4px;}
+    .cta-strip .price-sub{font-size:0.8rem;color:var(--white-40);margin-bottom:24px;display:block;}
+
+    @media(max-width:600px){
+      nav{padding:14px 20px;}
+      .page{padding:24px 16px;}
+      .search-bar{gap:10px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="{% url 'tenants:landing' %}" class="logo">
+    <div class="logo-icon"><i class="fas fa-house"></i></div>
+    Find Your <span>Home Kenya</span>
+  </a>
+  <div class="nav-links">
+    {% if is_active %}
+    <a href="{% url 'tenants:home' %}" class="btn-nav btn-outline-nav">My Dashboard</a>
+    {% elif is_logged_in %}
+    <a href="{% url 'tenants:payment' %}" class="btn-nav btn-cyan">Subscribe to Unlock</a>
+    {% else %}
+    <a href="{% url 'tenants:login' %}" class="btn-nav btn-outline-nav">Login</a>
+    <a href="{% url 'tenants:register' %}" class="btn-nav btn-cyan">Get Full Access</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>Browse <span>Available Houses</span></h1>
+    <p>Filter by house type and budget. Subscribe to unlock location, contacts and full details.</p>
+  </div>
+
+  <!-- NOTICE -->
+  <div class="notice-banner">
+    <i class="fas fa-lock"></i>
+    <div>
+      <strong>Free preview mode</strong> — You can browse house types and prices freely.
+      To view location, directions and landlord contacts, <strong>subscribe once</strong> for KSh {{ site.tenant_fee }}.
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <form method="get" action="{% url 'tenants:browse' %}">
+    <div class="search-bar">
+      <div class="search-group">
+        <label>House Type</label>
+        <select name="type" class="search-select">
+          <option value="">All Types</option>
+          {% for val, label in property_types %}
+          <option value="{{ val }}" {% if selected_type == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="search-group">
+        <label>Max Rent (KSh)</label>
+        <input type="number" name="max_price" class="search-input" placeholder="e.g. 15000" value="{{ selected_max_price }}"/>
+      </div>
+      <button type="submit" class="btn-search"><i class="fas fa-search"></i> Search</button>
+      {% if selected_type or selected_max_price %}
+      <a href="{% url 'tenants:browse' %}" class="btn-search" style="background:var(--white-10);color:var(--white);border:1px solid var(--border);">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+
+  <!-- COUNT -->
+  <div class="results-info">
+    <strong>{{ total }}</strong> propert{{ total|pluralize:"y,ies" }} available
+    {% if selected_type or selected_max_price %}&nbsp;·&nbsp; Filtered{% endif %}
+  </div>
+
+  <!-- GRID -->
+  {% if properties %}
+  <div class="prop-grid">
+    {% for prop in properties %}
+    <div class="prop-card">
+      <!-- Image -->
+      <div class="prop-img">
+        {% with main=prop.get_main_photo %}
+          {% if main %}<img src="{{ main.image.url }}" alt="{{ prop.title }}"/>
+          {% else %}<i class="fas fa-building"></i>{% endif %}
+        {% endwith %}
+        <!-- Type badge on image -->
+        <div style="position:absolute;top:10px;left:10px;background:rgba(5,13,26,0.85);
+                    border:1px solid var(--border);border-radius:20px;padding:4px 12px;
+                    font-size:0.72rem;font-weight:700;color:var(--cyan);backdrop-filter:blur(4px);">
+          {{ prop.get_property_type_display }}
+        </div>
+      </div>
+      <div class="prop-body">
+        <div class="prop-price">KSh {{ prop.price|floatformat:0 }} <span>/ month</span></div>
+        <div class="prop-title">{{ prop.get_property_type_display }} — {{ prop.title|truncatechars:30 }}</div>
+
+        <!-- Locked details hint -->
+        <div class="locked-info">
+          <i class="fas fa-lock"></i>
+          Location, contacts & directions — subscribe to unlock
+        </div>
+
+        <!-- SELECT button -->
+        <a href="{% url 'tenants:property_preview' prop.id %}" class="btn-select">
+          <i class="fas fa-eye"></i> View & Select
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="prop-grid">
+    <div class="empty-state">
+      <i class="fas fa-search"></i>
+      <h3>No properties found</h3>
+      <p>Try adjusting your filters or check back soon for new listings.</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- SUBSCRIBE CTA -->
+  <div class="cta-strip">
+    <h3>Ready to find your <span>perfect home?</span></h3>
+    <p>Subscribe once and get full access — location, photos, landlord contacts, directions. No monthly fees.</p>
+    <div class="price-tag">KSh {{ site.tenant_fee }}</div>
+    <span class="price-sub">One-time payment · Lifetime access · Pay via M-Pesa</span>
+    {% if is_active %}
+    <a href="{% url 'tenants:home' %}" class="btn-select" style="max-width:280px;margin:0 auto;display:flex;">
+      <i class="fas fa-home"></i> Go to Full Dashboard
+    </a>
+    {% elif is_logged_in %}
+    <a href="{% url 'tenants:payment' %}" class="btn-select" style="max-width:280px;margin:0 auto;display:flex;">
+      <i class="fas fa-mobile-alt"></i> Subscribe Now
+    </a>
+    {% else %}
+    <a href="{% url 'tenants:register' %}" class="btn-select" style="max-width:280px;margin:0 auto;display:flex;">
+      <i class="fas fa-user-plus"></i> Create Account & Subscribe
+    </a>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{% extends 'landlords/base.html' %}
+{% block title %}Dashboard – Landlord{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-val">{{ total_count }}</div>
+    <div class="stat-label">Total Listings</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--cyan);">{{ approved_count }}</div>
+    <div class="stat-label">Live & Approved</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#ffc800;">{{ pending_count }}</div>
+    <div class="stat-label">Pending Approval</div>
+  </div>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+  <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Recent Listings</h3>
+  <a href="{% url 'landlords:post_property' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Post New Property</a>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden;">
+  <table class="prop-table">
+    <thead>
+      <tr><th>Property</th><th>Type</th><th>Rent</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for prop in properties %}
+      <tr>
+        <td>
+          <strong>{{ prop.title }}</strong>
+          <br/><small style="color:var(--white-40);">{{ prop.location }}</small>
+        </td>
+        <td>{{ prop.get_property_type_display }}</td>
+        <td>KSh {{ prop.price|floatformat:0 }}/mo</td>
+        <td>
+          <span class="badge {% if prop.is_approved %}badge-success{% else %}badge-warning{% endif %}">
+            {% if prop.is_approved %}Live{% else %}Pending{% endif %}
+          </span>
+        </td>
+        <td>
+          <a href="{% url 'landlords:edit_property' prop.id %}" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></a>
+          <form method="post" action="{% url 'landlords:delete_property' prop.id %}" style="display:inline;" onsubmit="return confirm('Delete this property?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" style="text-align:center;padding:40px;color:var(--white-40);">
+          <i class="fas fa-building" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.3;"></i>
+          No listings yet. <a href="{% url 'landlords:post_property' %}" style="color:var(--cyan);">Post your first property</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

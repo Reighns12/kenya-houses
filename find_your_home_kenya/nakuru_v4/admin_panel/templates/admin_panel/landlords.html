@@ -1,0 +1,50 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Landlords – Admin{% endblock %}
+{% block page_title %}Landlord Accounts{% endblock %}
+
+{% block content %}
+<form method="get" class="search-row" style="margin-bottom:20px;">
+  <input type="text" name="search" class="search-input" placeholder="Search by name or email..." value="{{ search }}"/>
+  <select name="status" class="filter-select">
+    <option value="">All Status</option>
+    <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+    <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+  </select>
+  <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Filter</button>
+</form>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Email</th><th>Phone</th><th>Listings</th><th>Joined</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for landlord in landlords %}
+      <tr>
+        <td><strong>{{ landlord.full_name }}</strong></td>
+        <td style="font-size:0.82rem;color:var(--white-70);">{{ landlord.email }}</td>
+        <td>{{ landlord.phone }}</td>
+        <td style="text-align:center;">{{ landlord.property_count }}</td>
+        <td style="color:var(--white-40);font-size:0.8rem;">{{ landlord.joined_at|date:"d M Y" }}</td>
+        <td>
+          <span class="badge {% if landlord.is_active %}badge-success{% else %}badge-warning{% endif %}">
+            {% if landlord.is_active %}Active{% else %}Inactive{% endif %}
+          </span>
+        </td>
+        <td>
+          <a href="{% url 'admin_panel:toggle_landlord' landlord.id %}" class="btn btn-outline btn-sm">
+            {% if landlord.is_active %}<i class="fas fa-ban"></i> Deactivate{% else %}<i class="fas fa-check"></i> Activate{% endif %}
+          </a>
+          <form method="post" action="{% url 'admin_panel:delete_landlord' landlord.id %}" style="display:inline;" onsubmit="return confirm('Delete {{ landlord.full_name }} and all their listings?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="text-align:center;color:var(--white-40);padding:32px;">No landlords found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

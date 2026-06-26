@@ -1,0 +1,104 @@
+{% extends 'tenants/base.html' %}
+{% block title %}Browse Listings – Find Your Home Kenya{% endblock %}
+{% block page_title %}Browse Listings{% endblock %}
+
+{% block content %}
+<!-- SEARCH BAR -->
+<form method="get" action="{% url 'tenants:home' %}">
+  <div class="search-bar">
+    <div class="search-group">
+      <label>House Type</label>
+      <select name="type" class="search-select">
+        <option value="">All Types</option>
+        {% for val, label in property_types %}
+        <option value="{{ val }}" {% if selected_type == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="search-group">
+      <label>Location / Estate</label>
+      <input type="text" name="location" class="search-input" placeholder="e.g. Milimani, Section 58..." value="{{ selected_location }}"/>
+    </div>
+    <div class="search-group">
+      <label>Max Rent (KSh)</label>
+      <input type="number" name="max_price" class="search-input" placeholder="e.g. 15000" value="{{ selected_max_price }}"/>
+    </div>
+    <button type="submit" class="btn-search"><i class="fas fa-search"></i> Search</button>
+    {% if selected_type or selected_location or selected_max_price %}
+    <a href="{% url 'tenants:home' %}" class="btn-search" style="background:var(--white-10);color:var(--white);border:1px solid var(--border);">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+<!-- RESULTS COUNT -->
+<div style="margin-bottom:20px;color:var(--white-40);font-size:0.88rem;">
+  <strong style="color:var(--white);">{{ total }}</strong> propert{{ total|pluralize:"y,ies" }} found
+  {% if selected_type or selected_location or selected_max_price %}
+  &nbsp;·&nbsp; Filtered results
+  {% endif %}
+</div>
+
+<!-- LISTINGS GRID -->
+{% if properties %}
+<div class="prop-grid">
+  {% for prop in properties %}
+  <div style="position:relative;">
+    <a href="{% url 'tenants:property_detail' prop.id %}" class="prop-card">
+      <div class="prop-img">
+        {% with main=prop.get_main_photo %}
+          {% if main %}<img src="{{ main.image.url }}" alt="{{ prop.title }}"/>
+          {% else %}<i class="fas fa-building"></i>{% endif %}
+        {% endwith %}
+      </div>
+      <div class="prop-body">
+        <div class="prop-tag">{{ prop.get_property_type_display }}</div>
+        <div class="prop-title">{{ prop.title }}</div>
+        <div class="prop-loc"><i class="fas fa-map-marker-alt"></i>{{ prop.location }}</div>
+        <div class="prop-price">KSh {{ prop.price|floatformat:0 }} <span>/ month</span></div>
+      </div>
+    </a>
+    <!-- Save button -->
+    <button
+      class="save-btn {% if prop.id in saved_ids %}saved{% endif %}"
+      data-id="{{ prop.id }}"
+      style="position:absolute;top:12px;right:12px;
+             background:rgba(5,13,26,0.85);border:1px solid var(--border);
+             border-radius:8px;padding:7px 10px;cursor:pointer;transition:all 0.2s;
+             color:{% if prop.id in saved_ids %}#ff6b6b{% else %}var(--white-40){% endif %};">
+      <i class="fas fa-heart"></i>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align:center;padding:60px;">
+  <i class="fas fa-search" style="font-size:2.5rem;color:var(--white-40);margin-bottom:16px;display:block;"></i>
+  <h3 style="font-family:'Syne',sans-serif;margin-bottom:8px;">No properties found</h3>
+  <p style="color:var(--white-40);font-size:0.88rem;">Try adjusting your search filters or check back soon for new listings.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Save/unsave property
+  document.querySelectorAll('.save-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const id = btn.dataset.id;
+      const res = await fetch(`/save/${id}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}'}
+      });
+      const data = await res.json();
+      if (data.saved) {
+        btn.style.color = '#ff6b6b';
+        btn.classList.add('saved');
+      } else {
+        btn.style.color = 'var(--white-40)';
+        btn.classList.remove('saved');
+      }
+    });
+  });
+</script>
+{% endblock %}

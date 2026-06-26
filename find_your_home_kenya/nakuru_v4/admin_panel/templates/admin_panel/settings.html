@@ -1,0 +1,77 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Settings – Admin{% endblock %}
+{% block page_title %}Settings & Configuration{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+  <!-- PAYMENT SETTINGS -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom:20px;"><i class="fas fa-mobile-alt" style="color:var(--cyan);margin-right:8px;"></i>M-Pesa & Payment Settings</div>
+    <form method="post" action="{% url 'admin_panel:settings' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">M-Pesa Till Number <span style="color:var(--cyan);">*</span></label>
+        <input type="text" name="mpesa_till_number" class="form-input" value="{{ site.mpesa_till_number }}" placeholder="e.g. 123456" required/>
+        <small style="color:var(--white-40);font-size:0.75rem;margin-top:4px;display:block;">This is the till number shown to users during payment.</small>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Landlord Fee (KSh)</label>
+          <input type="number" name="landlord_fee" class="form-input" value="{{ site.landlord_fee }}" min="1" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tenant Fee (KSh)</label>
+          <input type="number" name="tenant_fee" class="form-input" value="{{ site.tenant_fee }}" min="1" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Site Name</label>
+        <input type="text" name="site_name" class="form-input" value="{{ site.site_name }}"/>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;">
+        <i class="fas fa-save"></i> Save Settings
+      </button>
+    </form>
+  </div>
+
+  <!-- ADMIN PASSWORD -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom:20px;"><i class="fas fa-lock" style="color:var(--cyan);margin-right:8px;"></i>Change Admin Password</div>
+    <form method="post" action="{% url 'admin_panel:settings' %}">
+      {% csrf_token %}
+      <input type="hidden" name="change_password" value="1"/>
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" name="current_password" class="form-input" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" name="new_password" class="form-input" required/>
+      </div>
+      <button type="submit" class="btn btn-outline" style="width:100%;justify-content:center;padding:12px;">
+        <i class="fas fa-key"></i> Change Password
+      </button>
+    </form>
+
+    <hr style="border:none;border-top:1px solid var(--white-10);margin:24px 0;"/>
+
+    <!-- CURRENT SETTINGS DISPLAY -->
+    <div class="card-title" style="margin-bottom:14px;"><i class="fas fa-info-circle" style="color:var(--cyan);margin-right:8px;"></i>Current Configuration</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-10);">
+        <span style="color:var(--white-40);font-size:0.85rem;">Till Number</span>
+        <strong style="color:var(--cyan);">{{ site.mpesa_till_number|default:"Not set" }}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-10);">
+        <span style="color:var(--white-40);font-size:0.85rem;">Landlord Fee</span>
+        <strong>KSh {{ site.landlord_fee }}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;">
+        <span style="color:var(--white-40);font-size:0.85rem;">Tenant Fee</span>
+        <strong>KSh {{ site.tenant_fee }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

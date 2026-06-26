@@ -1,0 +1,83 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Add Property – Admin{% endblock %}
+{% block page_title %}Post a Property{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:800px;">
+  <div class="card-title" style="margin-bottom:24px;"><i class="fas fa-plus-circle" style="color:var(--cyan);margin-right:8px;"></i>Add New Property Listing</div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="form-label">Assign to Landlord <span style="color:var(--cyan);">*</span></label>
+      <select name="landlord_id" class="form-select" required>
+        <option value="">-- Select a landlord --</option>
+        {% for landlord in landlords %}
+        <option value="{{ landlord.id }}">{{ landlord.full_name }} ({{ landlord.email }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Property Title <span style="color:var(--cyan);">*</span></label>
+        <input type="text" name="title" class="form-input" placeholder="e.g. Modern 2BR Apartment in Milimani" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Property Type <span style="color:var(--cyan);">*</span></label>
+        <select name="property_type" class="form-select" required>
+          <option value="">-- Select type --</option>
+          {% for val, label in property_types %}
+          <option value="{{ val }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Monthly Rent (KSh) <span style="color:var(--cyan);">*</span></label>
+        <input type="number" name="price" class="form-input" placeholder="e.g. 15000" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location / Estate <span style="color:var(--cyan);">*</span></label>
+        <input type="text" name="location" class="form-input" placeholder="e.g. Milimani, Nakuru" required/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Full Address <span style="color:var(--cyan);">*</span></label>
+      <input type="text" name="address" class="form-input" placeholder="Street name, building name, floor..." required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Directions to Property <span style="color:var(--cyan);">*</span></label>
+      <textarea name="directions" class="form-textarea" placeholder="From Nakuru town, take... Turn left at... Look for..." required></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Property Description <span style="color:var(--cyan);">*</span></label>
+      <textarea name="description" class="form-textarea" placeholder="Describe the property — size, condition, features..." required></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amenities (comma-separated)</label>
+      <input type="text" name="amenities" class="form-input" placeholder="Water, Electricity, WiFi, Parking, Security..."/>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Contact Phone <span style="color:var(--cyan);">*</span></label>
+        <input type="tel" name="contact_phone" class="form-input" placeholder="07XX XXX XXX" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">WhatsApp Number (optional)</label>
+        <input type="tel" name="contact_whatsapp" class="form-input" placeholder="07XX XXX XXX"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Property Photos (up to 10)</label>
+      <input type="file" name="photos" class="form-input" multiple accept="image/*" style="padding:8px;"/>
+      <small style="color:var(--white-40);font-size:0.75rem;margin-top:4px;display:block;">First image will be the cover photo. JPG/PNG recommended.</small>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button type="submit" class="btn btn-primary" style="padding:12px 28px;">
+        <i class="fas fa-check"></i> Post Property (Goes Live Immediately)
+      </button>
+      <a href="{% url 'admin_panel:listings' %}" class="btn btn-outline" style="padding:12px 20px;">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

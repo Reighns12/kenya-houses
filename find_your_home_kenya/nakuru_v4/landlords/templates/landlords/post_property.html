@@ -1,0 +1,93 @@
+{% extends 'landlords/base.html' %}
+{% block title %}Post Property – Landlord{% endblock %}
+{% block page_title %}Post a New Property{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:750px;">
+  <div class="card-title"><i class="fas fa-plus-circle" style="color:var(--cyan);margin-right:8px;"></i>List Your Property</div>
+  <p style="color:var(--white-40);font-size:0.85rem;margin-bottom:24px;">Fill in the details below. Your listing will be reviewed and made live once approved.</p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Property Title <span style="color:var(--cyan);">*</span></label>
+        <input type="text" name="title" class="form-input" placeholder="e.g. Modern 2BR in Milimani" value="{{ form_data.title|default:'' }}" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Property Type <span style="color:var(--cyan);">*</span></label>
+        <select name="property_type" class="form-select" required>
+          <option value="">-- Select type --</option>
+          <option value="bedsitter">Bedsitter</option>
+          <option value="single">Single Room</option>
+          <option value="1bedroom">1 Bedroom</option>
+          <option value="2bedroom">2 Bedroom</option>
+          <option value="3bedroom">3 Bedroom</option>
+          <option value="4bedroom">4+ Bedroom</option>
+          <option value="studio">Studio</option>
+          <option value="bungalow">Bungalow</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Monthly Rent (KSh) <span style="color:var(--cyan);">*</span></label>
+        <input type="number" name="price" class="form-input" placeholder="e.g. 12000" value="{{ form_data.price|default:'' }}" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location / Estate <span style="color:var(--cyan);">*</span></label>
+        <input type="text" name="location" class="form-input" placeholder="e.g. Section 58, Nakuru" value="{{ form_data.location|default:'' }}" required/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Full Address <span style="color:var(--cyan);">*</span></label>
+      <input type="text" name="address" class="form-input" placeholder="Street, building name, floor/door number..." value="{{ form_data.address|default:'' }}" required/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Directions to Property <span style="color:var(--cyan);">*</span></label>
+      <textarea name="directions" class="form-textarea" placeholder="e.g. From Nakuru town, board a matatu to Section 58. Alight at the Total petrol station. Turn left at the junction...">{{ form_data.directions|default:'' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Property Description <span style="color:var(--cyan);">*</span></label>
+      <textarea name="description" class="form-textarea" placeholder="Describe the property — rooms, condition, size, what's included...">{{ form_data.description|default:'' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Amenities (comma-separated)</label>
+      <input type="text" name="amenities" class="form-input" placeholder="Water 24/7, Electricity, WiFi, Parking, Security Guard, CCTV..." value="{{ form_data.amenities|default:'' }}"/>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Contact Phone <span style="color:var(--cyan);">*</span></label>
+        <input type="tel" name="contact_phone" class="form-input" placeholder="07XX XXX XXX" value="{{ form_data.contact_phone|default:landlord.phone }}" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">WhatsApp Number</label>
+        <input type="tel" name="contact_whatsapp" class="form-input" placeholder="07XX XXX XXX (if different)" value="{{ form_data.contact_whatsapp|default:'' }}"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Property Photos (up to 10)</label>
+      <input type="file" name="photos" class="form-input" multiple accept="image/*" style="padding:8px;cursor:pointer;"/>
+      <small style="color:var(--white-40);font-size:0.75rem;margin-top:4px;display:block;">First image will be the cover/main photo. High quality photos get more inquiries.</small>
+    </div>
+
+    <div style="background:rgba(255,200,0,0.06);border:1px solid rgba(255,200,0,0.2);border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:0.83rem;color:rgba(255,200,0,0.8);">
+      <i class="fas fa-info-circle" style="margin-right:6px;"></i> Your listing will be reviewed before going live. This usually takes a short time.
+    </div>
+
+    <div style="display:flex;gap:12px;">
+      <button type="submit" class="btn btn-primary" style="padding:12px 28px;font-size:0.95rem;">
+        <i class="fas fa-paper-plane"></i> Submit Listing
+      </button>
+      <a href="{% url 'landlords:dashboard' %}" class="btn btn-outline" style="padding:12px 20px;">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

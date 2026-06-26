@@ -1,0 +1,208 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Payments – Find Your Home Kenya{% endblock %}
+{% block page_title %}Payments{% endblock %}
+
+{% block content %}
+<!-- STATS -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;">
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--cyan);">{{ total_payments }}</div>
+    <div class="stat-label">Total Payments</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#ffc800;">{{ pending_payments }}</div>
+    <div class="stat-label">Awaiting Confirmation</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#4ade80;">{{ confirmed_payments }}</div>
+    <div class="stat-label">Confirmed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--cyan);">KSh {{ total_revenue|floatformat:0 }}</div>
+    <div class="stat-label">Total Revenue</div>
+  </div>
+</div>
+
+{% if messages %}
+{% for msg in messages %}
+<div style="padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:0.88rem;
+            background:rgba(0,229,255,0.08);border:1px solid var(--border);color:var(--cyan);">
+  <i class="fas fa-check-circle"></i> {{ msg }}
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- PENDING FIRST -->
+{% if pending_list %}
+<div class="admin-section" style="margin-bottom:28px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">
+      ⏳ Awaiting Your Confirmation
+    </h3>
+    <span style="background:rgba(255,200,0,0.15);color:#ffc800;border:1px solid rgba(255,200,0,0.3);
+                 padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;">
+      {{ pending_list|length }} pending
+    </span>
+  </div>
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>M-Pesa Code</th>
+          <th>Phone</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for payment in pending_list %}
+        <tr style="border-left:3px solid #ffc800;">
+          <td>
+            <div style="font-weight:600;">{{ payment.user_email }}</div>
+          </td>
+          <td>
+            <span style="background:rgba(0,229,255,0.1);color:var(--cyan);border:1px solid var(--border);
+                         padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;
+                         text-transform:capitalize;">
+              {{ payment.payment_type }}
+            </span>
+          </td>
+          <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--cyan);">
+            KSh {{ payment.amount|floatformat:0 }}
+          </td>
+          <td>
+            {% if payment.mpesa_code %}
+            <code style="background:rgba(0,229,255,0.08);border:1px solid var(--border);
+                         padding:4px 10px;border-radius:6px;font-size:0.85rem;color:var(--cyan);
+                         letter-spacing:0.05em;">
+              {{ payment.mpesa_code }}
+            </code>
+            {% else %}
+            <span style="color:var(--white-40);font-size:0.82rem;font-style:italic;">No code yet</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--white-70);">{{ payment.user_phone }}</td>
+          <td style="color:var(--white-40);font-size:0.82rem;">{{ payment.created_at|date:"d M Y, H:i" }}</td>
+          <td>
+            <div style="display:flex;gap:8px;">
+              <a href="{% url 'payments:admin_confirm' payment.id %}"
+                 style="padding:7px 16px;border-radius:8px;background:rgba(74,222,128,0.15);
+                        color:#4ade80;border:1px solid rgba(74,222,128,0.3);text-decoration:none;
+                        font-size:0.82rem;font-weight:700;white-space:nowrap;"
+                 onclick="return confirm('Confirm payment from {{ payment.user_email }}? This will activate their account.')">
+                <i class="fas fa-check"></i> Confirm
+              </a>
+              <a href="{% url 'payments:admin_reject' payment.id %}"
+                 style="padding:7px 16px;border-radius:8px;background:rgba(255,80,80,0.1);
+                        color:#ff6b6b;border:1px solid rgba(255,80,80,0.3);text-decoration:none;
+                        font-size:0.82rem;font-weight:700;"
+                 onclick="return confirm('Reject this payment? The account will remain locked.')">
+                <i class="fas fa-times"></i> Reject
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div style="padding:16px 20px;background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);
+            border-radius:12px;margin-bottom:28px;font-size:0.88rem;color:#4ade80;">
+  <i class="fas fa-check-circle"></i> No pending payments — you're all caught up!
+</div>
+{% endif %}
+
+<!-- ALL PAYMENTS -->
+<div class="admin-section">
+  <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:16px;">All Payments</h3>
+  {% if payments %}
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>M-Pesa Code</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for payment in payments %}
+        <tr>
+          <td>
+            <div style="font-weight:600;font-size:0.88rem;">{{ payment.user_email }}</div>
+            <div style="font-size:0.75rem;color:var(--white-40);">{{ payment.user_phone }}</div>
+          </td>
+          <td>
+            <span style="background:rgba(0,229,255,0.1);color:var(--cyan);border:1px solid var(--border);
+                         padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;
+                         text-transform:capitalize;">
+              {{ payment.payment_type }}
+            </span>
+          </td>
+          <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--cyan);">
+            KSh {{ payment.amount|floatformat:0 }}
+          </td>
+          <td>
+            {% if payment.mpesa_code %}
+            <code style="background:rgba(0,229,255,0.08);border:1px solid var(--border);
+                         padding:4px 10px;border-radius:6px;font-size:0.85rem;color:var(--cyan);">
+              {{ payment.mpesa_code }}
+            </code>
+            {% else %}
+            <span style="color:var(--white-40);font-size:0.82rem;">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if payment.status == 'confirmed' %}
+            <span class="badge-success">✓ Confirmed</span>
+            {% elif payment.status == 'pending' %}
+            <span class="badge-warn">⏳ Pending</span>
+            {% else %}
+            <span class="badge-fail">✗ Failed</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--white-40);font-size:0.82rem;">{{ payment.created_at|date:"d M Y" }}</td>
+          <td>
+            {% if payment.status == 'pending' %}
+            <div style="display:flex;gap:6px;">
+              <a href="{% url 'payments:admin_confirm' payment.id %}"
+                 style="padding:5px 12px;border-radius:6px;background:rgba(74,222,128,0.15);
+                        color:#4ade80;border:1px solid rgba(74,222,128,0.3);text-decoration:none;
+                        font-size:0.78rem;font-weight:700;"
+                 onclick="return confirm('Confirm this payment?')">
+                <i class="fas fa-check"></i>
+              </a>
+              <a href="{% url 'payments:admin_reject' payment.id %}"
+                 style="padding:5px 12px;border-radius:6px;background:rgba(255,80,80,0.1);
+                        color:#ff6b6b;border:1px solid rgba(255,80,80,0.3);text-decoration:none;
+                        font-size:0.78rem;font-weight:700;"
+                 onclick="return confirm('Reject this payment?')">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
+            {% else %}
+            <span style="color:var(--white-40);font-size:0.78rem;">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:40px;color:var(--white-40);">
+    <i class="fas fa-receipt" style="font-size:2rem;margin-bottom:12px;display:block;"></i>
+    No payments yet
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'tenants/base.html' %}
+{% block title %}{{ property.title }} – Find Your Home Kenya{% endblock %}
+{% block page_title %}Property Details{% endblock %}
+
+{% block extra_css %}
+<style>
+  .photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;}
+  .photo-thumb{height:160px;border-radius:12px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;}
+  .photo-thumb:hover{border-color:var(--cyan);}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;}
+  .photo-main{width:100%;height:380px;border-radius:16px;overflow:hidden;margin-bottom:16px;}
+  .photo-main img{width:100%;height:100%;object-fit:cover;}
+  .detail-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;}
+  .info-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--white-10);font-size:0.88rem;}
+  .info-label{color:var(--white-40);width:140px;flex-shrink:0;}
+  .info-val{color:var(--white);font-weight:500;}
+  .amenity-tag{display:inline-block;padding:5px 12px;background:rgba(0,229,255,0.08);border:1px solid var(--border);border-radius:20px;font-size:0.78rem;color:var(--white-70);margin:4px;}
+  .contact-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:80px;}
+  .contact-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:16px;}
+  .btn-contact{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:50px;font-weight:700;font-size:0.9rem;text-decoration:none;margin-bottom:10px;transition:all 0.2s;border:none;cursor:pointer;}
+  .btn-call{background:var(--cyan);color:var(--navy);}
+  .btn-call:hover{background:#33ebff;}
+  .btn-whatsapp{background:rgba(37,211,102,0.15);color:#25d366;border:1px solid rgba(37,211,102,0.3);}
+  .btn-whatsapp:hover{background:rgba(37,211,102,0.25);}
+  .save-full-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:50px;background:var(--white-10);border:1px solid var(--border);color:var(--white-70);font-size:0.88rem;cursor:pointer;transition:all 0.2s;}
+  .save-full-btn:hover,.save-full-btn.saved{color:#ff6b6b;border-color:rgba(255,107,107,0.4);}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:16px;">
+  <a href="{% url 'tenants:home' %}" style="color:var(--white-40);font-size:0.85rem;text-decoration:none;">
+    <i class="fas fa-arrow-left" style="margin-right:6px;"></i>Back to listings
+  </a>
+</div>
+
+<div class="detail-grid">
+  <!-- LEFT: Photos + Details -->
+  <div>
+    <!-- Main Photo -->
+    {% with main=property.get_main_photo %}
+    {% if main %}
+    <div class="photo-main"><img src="{{ main.image.url }}" alt="{{ property.title }}" id="main-img"/></div>
+    {% else %}
+    <div class="photo-main" style="background:linear-gradient(135deg,var(--navy-3),rgba(0,229,255,0.06));display:flex;align-items:center;justify-content:center;">
+      <i class="fas fa-building" style="font-size:4rem;color:rgba(0,229,255,0.2);"></i>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Photo Gallery -->
+    {% if photos.count > 1 %}
+    <div class="photo-gallery">
+      {% for photo in photos %}
+      <div class="photo-thumb" onclick="document.getElementById('main-img').src='{{ photo.image.url }}'">
+        <img src="{{ photo.image.url }}" alt="Photo {{ forloop.counter }}"/>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Property Title & Type -->
+    <div class="card" style="margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div class="prop-tag" style="margin-bottom:8px;">{{ property.get_property_type_display }}</div>
+          <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:6px;">{{ property.title }}</h2>
+          <div style="color:var(--white-40);font-size:0.88rem;"><i class="fas fa-map-marker-alt" style="color:var(--cyan);margin-right:6px;"></i>{{ property.location }}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--cyan);">KSh {{ property.price|floatformat:0 }}</div>
+          <div style="font-size:0.78rem;color:var(--white-40);">per month</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="info-row"><span class="info-label">Address</span><span class="info-val">{{ property.address }}</span></div>
+        <div class="info-row"><span class="info-label">Type</span><span class="info-val">{{ property.get_property_type_display }}</span></div>
+        <div class="info-row"><span class="info-label">Available</span><span class="info-val">{% if property.is_available %}<span style="color:var(--cyan);">Yes — Available Now</span>{% else %}<span style="color:#ff6b6b;">Not Available</span>{% endif %}</span></div>
+        <div class="info-row"><span class="info-label">Listed</span><span class="info-val">{{ property.created_at|date:"d F Y" }}</span></div>
+        <div class="info-row" style="border-bottom:none;"><span class="info-label">Views</span><span class="info-val">{{ property.views_count }}</span></div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">Description</div>
+      <p style="color:var(--white-70);line-height:1.8;font-size:0.9rem;white-space:pre-line;">{{ property.description }}</p>
+    </div>
+
+    <!-- Directions -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title"><i class="fas fa-route" style="color:var(--cyan);margin-right:8px;"></i>How to Get There</div>
+      <p style="color:var(--white-70);line-height:1.8;font-size:0.9rem;white-space:pre-line;">{{ property.directions }}</p>
+    </div>
+
+    <!-- Amenities -->
+    {% if amenities %}
+    <div class="card">
+      <div class="card-title"><i class="fas fa-star" style="color:var(--cyan);margin-right:8px;"></i>Amenities & Features</div>
+      <div style="margin-top:4px;">
+        {% for amenity in amenities %}
+        <span class="amenity-tag"><i class="fas fa-check" style="color:var(--cyan);margin-right:4px;"></i>{{ amenity }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- RIGHT: Contact Card -->
+  <div>
+    <div class="contact-card">
+      <h3><i class="fas fa-phone" style="color:var(--cyan);margin-right:8px;"></i>Contact Landlord</h3>
+      <p style="font-size:0.82rem;color:var(--white-40);margin-bottom:20px;">Call or WhatsApp the landlord directly — no middleman, no agent.</p>
+
+      <a href="tel:{{ property.contact_phone }}" class="btn-contact btn-call">
+        <i class="fas fa-phone"></i> Call {{ property.contact_phone }}
+      </a>
+
+      {% if property.contact_whatsapp %}
+      <a href="https://wa.me/254{{ property.contact_whatsapp|slice:'1:' }}?text=Hello, I saw your {{ property.get_property_type_display }} listing on Find Your Home Kenya ({{ property.title }}). Is it still available?" target="_blank" class="btn-contact btn-whatsapp">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+      {% else %}
+      <a href="https://wa.me/254{{ property.contact_phone|slice:'1:' }}?text=Hello, I saw your {{ property.get_property_type_display }} listing on Find Your Home Kenya ({{ property.title }}). Is it still available?" target="_blank" class="btn-contact btn-whatsapp">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+      {% endif %}
+
+      <button class="save-full-btn {% if is_saved %}saved{% endif %}" id="save-btn" onclick="toggleSave()">
+        <i class="fas fa-heart"></i>
+        <span id="save-text">{% if is_saved %}Saved to Favourites{% else %}Save Property{% endif %}</span>
+      </button>
+
+      <hr style="border:none;border-top:1px solid var(--white-10);margin:20px 0;"/>
+
+      <div style="font-size:0.8rem;color:var(--white-40);">
+        <div class="info-row" style="border:none;padding:4px 0;"><span class="info-label" style="width:100px;">Type</span><span>{{ property.get_property_type_display }}</span></div>
+        <div class="info-row" style="border:none;padding:4px 0;"><span class="info-label" style="width:100px;">Location</span><span>{{ property.location }}</span></div>
+        <div class="info-row" style="border:none;padding:4px 0;border-bottom:none;"><span class="info-label" style="width:100px;">Rent</span><span style="color:var(--cyan);font-weight:700;">KSh {{ property.price|floatformat:0 }}/mo</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIMILAR PROPERTIES -->
+{% if similar %}
+<div style="margin-top:32px;">
+  <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:20px;">Similar Properties</h3>
+  <div class="prop-grid">
+    {% for prop in similar %}
+    <a href="{% url 'tenants:property_detail' prop.id %}" class="prop-card">
+      <div class="prop-img">
+        {% with main=prop.get_main_photo %}
+          {% if main %}<img src="{{ main.image.url }}" alt="{{ prop.title }}"/>
+          {% else %}<i class="fas fa-building"></i>{% endif %}
+        {% endwith %}
+      </div>
+      <div class="prop-body">
+        <div class="prop-tag">{{ prop.get_property_type_display }}</div>
+        <div class="prop-title">{{ prop.title }}</div>
+        <div class="prop-loc"><i class="fas fa-map-marker-alt"></i>{{ prop.location }}</div>
+        <div class="prop-price">KSh {{ prop.price|floatformat:0 }} <span>/ month</span></div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  async function toggleSave() {
+    const btn = document.getElementById('save-btn');
+    const text = document.getElementById('save-text');
+    const res = await fetch("{% url 'tenants:toggle_save' property.id %}", {
+      method: 'POST',
+      headers: {'X-CSRFToken': '{{ csrf_token }}'}
+    });
+    const data = await res.json();
+    if (data.saved) {
+      btn.classList.add('saved');
+      text.textContent = 'Saved to Favourites';
+    } else {
+      btn.classList.remove('saved');
+      text.textContent = 'Save Property';
+    }
+  }
+</script>
+{% endblock %}

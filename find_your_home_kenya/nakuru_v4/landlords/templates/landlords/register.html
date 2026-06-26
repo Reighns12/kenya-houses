@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Landlord Register – Find Your Home Kenya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy:#050d1a;--cyan:#00e5ff;--border:rgba(0,229,255,0.18);--white:white;--white-40:rgba(255,255,255,0.4);--white-10:rgba(255,255,255,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 30%,rgba(0,100,180,0.2),transparent 70%);pointer-events:none;}
+    .auth-box{background:rgba(10,22,40,0.95);border:1px solid var(--border);border-radius:24px;padding:44px;width:100%;max-width:500px;backdrop-filter:blur(16px);position:relative;z-index:1;}
+    .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;}
+    .logo-box{width:34px;height:34px;border-radius:9px;background:var(--cyan);display:flex;align-items:center;justify-content:center;}
+    .logo-box i{color:var(--navy);}
+    .auth-logo span{color:var(--cyan);}
+    h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:6px;}
+    .sub{color:var(--white-40);font-size:0.85rem;margin-bottom:28px;line-height:1.6;}
+    .form-group{margin-bottom:14px;}
+    .form-label{display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;font-weight:500;}
+    .form-input{width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;}
+    .form-input:focus{outline:none;border-color:var(--cyan);}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .btn-submit{width:100%;padding:14px;border-radius:50px;background:var(--cyan);color:var(--navy);font-weight:700;font-size:0.95rem;border:none;cursor:pointer;margin-top:8px;transition:all 0.2s;font-family:'Syne',sans-serif;}
+    .btn-submit:hover{background:#33ebff;transform:translateY(-1px);}
+    .auth-footer{text-align:center;margin-top:16px;font-size:0.85rem;color:var(--white-40);}
+    .auth-footer a{color:var(--cyan);text-decoration:none;font-weight:500;}
+    .messages{margin-bottom:14px;}
+    .msg{padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+    .msg-error{background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff6b6b;}
+    .msg-warning{background:rgba(255,200,0,0.1);border:1px solid rgba(255,200,0,0.3);color:#ffc800;}
+    .highlight{background:rgba(0,229,255,0.06);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:0.85rem;color:var(--white-40);}
+    .highlight strong{color:var(--cyan);}
+    hr{border:none;border-top:1px solid var(--white-10);margin:20px 0;}
+  </style>
+</head>
+<body>
+<div class="auth-box">
+  <div class="auth-logo">
+    <div class="logo-box"><i class="fas fa-building"></i></div>
+    Find Your <span>Home Kenya</span>
+  </div>
+  <h2>List Your Property</h2>
+  <p class="sub">Create your landlord account and start listing your apartments. One-time payment of <strong style="color:var(--cyan);">KSh {{ LANDLORD_FEE }}</strong> to activate.</p>
+
+  <div class="highlight">
+    <strong><i class="fas fa-info-circle"></i> How it works:</strong> Create account → Pay KSh {{ LANDLORD_FEE }} once → Post unlimited listings → Get contacted by tenants directly.
+  </div>
+
+  {% if messages %}
+  <div class="messages">
+    {% for msg in messages %}
+    <div class="msg msg-{{ msg.tags }}"><i class="fas fa-exclamation-circle"></i> {{ msg }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" name="full_name" class="form-input" placeholder="Your full name" value="{{ form_data.full_name|default:'' }}" required/>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-input" placeholder="your@email.com" value="{{ form_data.email|default:'' }}" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" name="phone" class="form-input" placeholder="07XX XXX XXX" value="{{ form_data.phone|default:'' }}" required/>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-input" placeholder="Min 6 characters" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" name="confirm_password" class="form-input" placeholder="Repeat password" required/>
+      </div>
+    </div>
+    <button type="submit" class="btn-submit">Create Landlord Account <i class="fas fa-arrow-right"></i></button>
+  </form>
+  <hr/>
+  <div class="auth-footer">Already have an account? <a href="{% url 'landlords:login' %}">Login here</a></div>
+  <div class="auth-footer" style="margin-top:8px;">Looking for a house? <a href="{% url 'tenants:landing' %}">House hunter section</a></div>
+</div>
+</body>
+</html>

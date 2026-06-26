@@ -1,0 +1,122 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Dashboard – Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- STATS -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Landlords</div>
+    <div class="stat-val">{{ stats.total_landlords }}</div>
+    <div class="stat-sub">{{ stats.active_landlords }} active</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Tenants</div>
+    <div class="stat-val">{{ stats.total_tenants }}</div>
+    <div class="stat-sub">{{ stats.active_tenants }} subscribed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Live Listings</div>
+    <div class="stat-val">{{ stats.approved_properties }}</div>
+    <div class="stat-sub" style="color:#ffc800;">{{ stats.pending_properties }} pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Revenue</div>
+    <div class="stat-val">{{ stats.total_revenue|floatformat:0 }}</div>
+    <div class="stat-sub">KSh collected</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Confirmed Payments</div>
+    <div class="stat-val">{{ stats.total_payments }}</div>
+    <div class="stat-sub">All time</div>
+  </div>
+</div>
+
+<!-- PENDING LISTINGS -->
+{% if pending_properties %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><i class="fas fa-clock" style="color:#ffc800;margin-right:8px;"></i>Pending Approval ({{ pending_properties|length }})</div>
+    <a href="{% url 'admin_panel:listings' %}?status=pending" class="btn btn-outline btn-sm">View All</a>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Property</th><th>Landlord</th><th>Type</th><th>Price</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for prop in pending_properties %}
+      <tr>
+        <td><strong>{{ prop.title }}</strong><br/><small style="color:var(--white-40);">{{ prop.location }}</small></td>
+        <td>{{ prop.landlord.full_name }}</td>
+        <td><span class="badge badge-warning">{{ prop.get_property_type_display }}</span></td>
+        <td>KSh {{ prop.price|floatformat:0 }}</td>
+        <td>
+          <a href="{% url 'admin_panel:approve_property' prop.id %}" class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Approve</a>
+          <a href="{% url 'admin_panel:reject_property' prop.id %}" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Reject</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- RECENT PAYMENTS -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><i class="fas fa-money-bill-wave" style="color:var(--cyan);margin-right:8px;"></i>Recent Payments</div>
+    <a href="{% url 'admin_panel:payments' %}" class="btn btn-outline btn-sm">View All</a>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Phone</th><th>Amount</th><th>M-Pesa Code</th><th>Date</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for pay in recent_payments %}
+      <tr>
+        <td>{{ pay.get_payment_type_display }}</td>
+        <td>{{ pay.user_phone }}</td>
+        <td>KSh {{ pay.amount }}</td>
+        <td><code style="color:var(--cyan);font-size:0.78rem;">{{ pay.mpesa_code|default:"—" }}</code></td>
+        <td style="color:var(--white-40);font-size:0.8rem;">{{ pay.confirmed_at|date:"d M Y H:i" }}</td>
+        <td><span class="badge badge-success">Confirmed</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="text-align:center;color:var(--white-40);padding:24px;">No confirmed payments yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- QUICK LINKS -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <div class="card">
+    <div class="card-title" style="margin-bottom:14px;">Recent Landlords</div>
+    {% for l in recent_landlords %}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-10);">
+      <div>
+        <div style="font-size:0.85rem;font-weight:600;">{{ l.full_name }}</div>
+        <div style="font-size:0.75rem;color:var(--white-40);">{{ l.email }}</div>
+      </div>
+      <span class="badge {% if l.is_active %}badge-success{% else %}badge-warning{% endif %}">
+        {% if l.is_active %}Active{% else %}Pending{% endif %}
+      </span>
+    </div>
+    {% empty %}<p style="color:var(--white-40);font-size:0.85rem;">No landlords yet.</p>{% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:14px;">Recent Tenants</div>
+    {% for t in recent_tenants %}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-10);">
+      <div>
+        <div style="font-size:0.85rem;font-weight:600;">{{ t.full_name }}</div>
+        <div style="font-size:0.75rem;color:var(--white-40);">{{ t.email }}</div>
+      </div>
+      <span class="badge {% if t.is_active %}badge-success{% else %}badge-warning{% endif %}">
+        {% if t.is_active %}Active{% else %}Pending{% endif %}
+      </span>
+    </div>
+    {% empty %}<p style="color:var(--white-40);font-size:0.85rem;">No tenants yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'tenants/base.html' %}
+{% block title %}My Profile – Find Your Home Kenya{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+<div style="max-width:520px;">
+  <div class="card" style="margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <div style="width:60px;height:60px;border-radius:50%;background:var(--cyan-glow);border:2px solid var(--border);
+                  display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;
+                  color:var(--cyan);font-family:'Syne',sans-serif;flex-shrink:0;">
+        {{ tenant.full_name|first|upper }}
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;">{{ tenant.full_name }}</div>
+        <div style="font-size:0.78rem;color:var(--white-40);">Member since {{ tenant.joined_at|date:"F Y" }}</div>
+        <span style="background:rgba(0,229,255,0.1);color:var(--cyan);border:1px solid var(--border);
+                     padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;display:inline-block;margin-top:4px;">
+          Active Subscriber
+        </span>
+      </div>
+    </div>
+    {% if messages %}{% for msg in messages %}
+    <div style="padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:14px;
+                background:rgba(0,229,255,0.08);border:1px solid var(--border);color:var(--cyan);">
+      <i class="fas fa-check-circle"></i> {{ msg }}
+    </div>
+    {% endfor %}{% endif %}
+    <form method="post">{% csrf_token %}
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Full Name</label>
+        <input type="text" name="full_name" value="{{ tenant.full_name }}" required
+               style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);
+                      border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Email Address</label>
+        <input type="text" value="{{ tenant.email }}" disabled
+               style="width:100%;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,0.04);
+                      border:1px solid var(--white-10);color:var(--white-40);font-size:0.9rem;cursor:not-allowed;"/>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:0.78rem;color:var(--white-40);margin-bottom:7px;">Phone Number</label>
+        <input type="tel" name="phone" value="{{ tenant.phone }}"
+               style="width:100%;padding:12px 16px;border-radius:12px;background:var(--white-10);
+                      border:1px solid var(--border);color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;"/>
+      </div>
+      <button type="submit" style="padding:13px 32px;border-radius:50px;background:var(--cyan);color:var(--navy);
+                                   font-weight:700;font-size:0.9rem;border:none;cursor:pointer;font-family:'Syne',sans-serif;">
+        Save Changes
+      </button>
+    </form>
+  </div>
+  <div class="card">
+    <div style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--white-10);">Account Info</div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--white-10);font-size:0.85rem;">
+      <span style="color:var(--white-40);">Account Status</span><span style="color:var(--cyan);font-weight:600;">Active</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--white-10);font-size:0.85rem;">
+      <span style="color:var(--white-40);">Joined</span><span>{{ tenant.joined_at|date:"d F Y" }}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:0.85rem;">
+      <span style="color:var(--white-40);">Last Login</span><span>{{ tenant.last_login|date:"d F Y, H:i"|default:"—" }}</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Find Your Home Kenya – Find Your Perfect Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --navy: #050d1a;
+      --navy-2: #0a1628;
+      --navy-3: #0f2040;
+      --cyan: #00e5ff;
+      --cyan-dim: #00b8d4;
+      --cyan-glow: rgba(0,229,255,0.15);
+      --cyan-glow-strong: rgba(0,229,255,0.3);
+      --white: #ffffff;
+      --white-70: rgba(255,255,255,0.7);
+      --white-40: rgba(255,255,255,0.4);
+      --white-10: rgba(255,255,255,0.08);
+      --card-bg: rgba(15,32,64,0.85);
+      --border: rgba(0,229,255,0.18);
+      --radius: 16px;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 60px;
+      background: linear-gradient(to bottom, rgba(5,13,26,0.95), transparent);
+      backdrop-filter: blur(8px);
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--white);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo span { color: var(--cyan); }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--cyan);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon i { color: var(--navy); font-size: 1rem; }
+    nav .nav-links { display: flex; gap: 12px; align-items: center; }
+    .btn-nav {
+      padding: 10px 24px; border-radius: 50px;
+      font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.9rem;
+      cursor: pointer; text-decoration: none; transition: all 0.3s;
+      border: none;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--white-70);
+    }
+    .btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--navy);
+      font-weight: 700;
+      box-shadow: 0 0 20px var(--cyan-glow-strong);
+    }
+    .btn-primary:hover { background: #33ebff; box-shadow: 0 0 30px var(--cyan-glow-strong); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      position: relative;
+      padding: 120px 60px 80px;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 40%, rgba(0,100,180,0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 70%, rgba(0,229,255,0.08) 0%, transparent 60%),
+        linear-gradient(135deg, #050d1a 0%, #0a1628 50%, #050d1a 100%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 680px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 50px;
+      background: rgba(0,229,255,0.1);
+      border: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--cyan); margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    h1 em { color: var(--cyan); font-style: normal; }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--white-70);
+      line-height: 1.7; max-width: 520px;
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .btn-hero {
+      padding: 16px 36px; border-radius: 50px;
+      font-size: 1rem; font-weight: 700;
+      text-decoration: none; cursor: pointer;
+      transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+      border: none;
+    }
+    .btn-hero-primary {
+      background: var(--cyan); color: var(--navy);
+      box-shadow: 0 8px 32px rgba(0,229,255,0.35);
+    }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,229,255,0.45); }
+    .btn-hero-ghost {
+      background: var(--white-10); color: var(--white);
+      border: 1.5px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+    .btn-hero-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .hero-stats {
+      position: relative; z-index: 2;
+      display: flex; gap: 48px; margin-top: 60px;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+    .stat-item { text-align: left; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem; font-weight: 800; color: var(--cyan);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--white-40); margin-top: 4px; }
+
+    /* ── HERO VISUAL (floating cards) ── */
+    .hero-visual {
+      position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+      z-index: 2; display: flex; flex-direction: column; gap: 16px;
+      animation: fadeLeft 0.8s 0.3s ease both;
+    }
+    @keyframes fadeLeft { from{opacity:0;transform:translateY(-50%) translateX(40px);} to{opacity:1;transform:translateY(-50%) translateX(0);} }
+    .preview-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      width: 280px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s;
+    }
+    .preview-card:hover { transform: translateX(-4px); }
+    .preview-card-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      background: rgba(0,229,255,0.12); color: var(--cyan);
+      font-size: 0.72rem; font-weight: 600; margin-bottom: 10px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .preview-card h4 {
+      font-family: 'Syne', sans-serif; font-size: 0.95rem;
+      font-weight: 700; margin-bottom: 6px;
+    }
+    .preview-card-loc { font-size: 0.8rem; color: var(--white-40); margin-bottom: 12px; }
+    .preview-card-loc i { color: var(--cyan); margin-right: 4px; }
+    .preview-card-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--cyan);
+    }
+    .preview-card-price span { font-size: 0.75rem; font-weight: 400; color: var(--white-40); }
+    .card-blur { filter: blur(6px); opacity: 0.5; }
+
+    /* ── SECTION COMMON ── */
+    section { position: relative; z-index: 1; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--cyan); margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: ''; display: block;
+      width: 24px; height: 2px; background: var(--cyan);
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; line-height: 1.15; margin-bottom: 16px;
+    }
+    .section-sub { color: var(--white-70); line-height: 1.7; max-width: 560px; }
+
+    /* ── HOW IT WORKS ── */
+    .how { padding: 120px 60px; background: var(--navy-2); }
+    .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .steps { display: flex; flex-direction: column; gap: 8px; margin-top: 40px; }
+    .step {
+      display: flex; gap: 20px; align-items: flex-start;
+      padding: 20px; border-radius: var(--radius);
+      border: 1px solid transparent; transition: all 0.3s; cursor: default;
+    }
+    .step:hover { background: var(--white-10); border-color: var(--border); }
+    .step-num {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 12px; background: var(--cyan-glow);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1rem; color: var(--cyan);
+    }
+    .step-text h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .step-text p { font-size: 0.88rem; color: var(--white-70); line-height: 1.6; }
+
+    .how-visual {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 24px; padding: 40px;
+      backdrop-filter: blur(12px);
+    }
+    .how-visual-title {
+      font-family: 'Syne', sans-serif; font-size: 1rem;
+      font-weight: 700; margin-bottom: 24px; color: var(--white-70);
+    }
+    .flow-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-radius: 12px;
+      background: rgba(0,229,255,0.06); border: 1px solid var(--border);
+      margin-bottom: 10px; font-size: 0.88rem;
+    }
+    .flow-icon { color: var(--cyan); font-size: 1rem; width: 20px; text-align: center; }
+    .flow-arrow { text-align: center; color: var(--white-40); font-size: 1.2rem; margin: 2px 0; }
+
+    /* ── FEATURES ── */
+    .features { padding: 120px 60px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 60px; }
+    .feature-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 36px 28px;
+      backdrop-filter: blur(12px); transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .feature-card:hover { transform: translateY(-4px); border-color: rgba(0,229,255,0.35); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--cyan-glow); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; color: var(--cyan); margin-bottom: 20px;
+    }
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif; font-size: 1.1rem;
+      font-weight: 700; margin-bottom: 10px;
+    }
+    .feature-card p { font-size: 0.88rem; color: var(--white-70); line-height: 1.65; }
+
+    /* ── LISTINGS PREVIEW ── */
+    .preview { padding: 120px 60px; background: var(--navy-2); }
+    .preview-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; }
+    .listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .listing-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: all 0.3s; position: relative;
+    }
+    .listing-card:hover { transform: translateY(-4px); border-color: rgba(0,229,255,0.3); }
+    .listing-img {
+      height: 180px;
+      background: linear-gradient(135deg, var(--navy-3), rgba(0,229,255,0.1));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; color: rgba(0,229,255,0.2);
+      position: relative; overflow: hidden;
+    }
+    .listing-img img { width: 100%; height: 100%; object-fit: cover; }
+    .listing-blur-overlay {
+      position: absolute; inset: 0;
+      background: rgba(5,13,26,0.7);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px;
+    }
+    .listing-blur-overlay i { font-size: 2rem; color: var(--cyan); }
+    .listing-blur-overlay span { font-size: 0.8rem; color: var(--white-70); }
+    .listing-info { padding: 20px; }
+    .listing-type {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      background: rgba(0,229,255,0.1); color: var(--cyan);
+      font-size: 0.72rem; font-weight: 600; margin-bottom: 10px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .listing-info h4 {
+      font-family: 'Syne', sans-serif; font-size: 0.95rem;
+      font-weight: 700; margin-bottom: 6px;
+    }
+    .listing-loc { font-size: 0.8rem; color: var(--white-40); margin-bottom: 14px; }
+    .listing-loc i { color: var(--cyan); margin-right: 4px; }
+    .listing-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem; font-weight: 700; color: var(--cyan);
+    }
+    .listing-price span { font-size: 0.75rem; font-weight: 400; color: var(--white-40); }
+    .lock-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(5,13,26,0.9); border: 1px solid var(--border);
+      border-radius: 8px; padding: 5px 10px;
+      font-size: 0.72rem; color: var(--cyan);
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    /* ── PRICING ── */
+    .pricing { padding: 120px 60px; }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; margin: 60px auto 0; }
+    .price-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 24px; padding: 48px 40px;
+      text-align: center; backdrop-filter: blur(12px);
+      transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .price-card.featured {
+      border-color: var(--cyan);
+      box-shadow: 0 0 40px var(--cyan-glow);
+    }
+    .price-card.featured::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--cyan);
+    }
+    .price-badge {
+      position: absolute; top: 20px; right: 20px;
+      background: var(--cyan); color: var(--navy);
+      font-size: 0.7rem; font-weight: 700; padding: 4px 10px;
+      border-radius: 20px; text-transform: uppercase;
+    }
+    .price-icon {
+      width: 64px; height: 64px; border-radius: 18px;
+      background: var(--cyan-glow); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; color: var(--cyan);
+      margin: 0 auto 24px;
+    }
+    .price-title {
+      font-family: 'Syne', sans-serif; font-size: 1.1rem;
+      font-weight: 700; margin-bottom: 8px;
+    }
+    .price-amount {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem; font-weight: 800; color: var(--cyan);
+      margin: 20px 0;
+    }
+    .price-amount small { font-size: 1rem; color: var(--white-40); font-weight: 400; }
+    .price-desc { font-size: 0.88rem; color: var(--white-70); margin-bottom: 28px; line-height: 1.6; }
+    .price-features { list-style: none; text-align: left; margin-bottom: 36px; }
+    .price-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.88rem; padding: 8px 0;
+      border-bottom: 1px solid var(--white-10); color: var(--white-70);
+    }
+    .price-features li i { color: var(--cyan); font-size: 0.8rem; flex-shrink: 0; }
+    .btn-price {
+      display: block; width: 100%;
+      padding: 14px; border-radius: 50px;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      text-decoration: none; text-align: center;
+      transition: all 0.3s; border: none; cursor: pointer;
+    }
+    .btn-price-primary {
+      background: var(--cyan); color: var(--navy);
+      box-shadow: 0 6px 24px rgba(0,229,255,0.3);
+    }
+    .btn-price-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(0,229,255,0.4); }
+    .btn-price-ghost {
+      background: var(--white-10); color: var(--white);
+      border: 1.5px solid var(--border);
+    }
+    .btn-price-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ── CTA BANNER ── */
+    .cta { padding: 100px 60px; background: var(--navy-2); }
+    .cta-inner {
+      max-width: 700px; margin: 0 auto; text-align: center;
+    }
+    .cta h2 { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; margin-bottom: 16px; }
+    .cta p { color: var(--white-70); font-size: 1.05rem; line-height: 1.7; margin-bottom: 40px; }
+    .cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 48px 60px;
+      border-top: 1px solid var(--white-10);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
+    .footer-brand span { color: var(--cyan); }
+    footer p { font-size: 0.82rem; color: var(--white-40); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 0.82rem; color: var(--white-40); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--cyan); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .hero { padding: 100px 24px 60px; }
+      .hero-visual { display: none; }
+      .hero-stats { gap: 28px; }
+      .how, .features, .preview, .pricing, .cta { padding: 80px 24px; }
+      .how-grid { grid-template-columns: 1fr; gap: 40px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .listings-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-icon"><i class="fas fa-house"></i></div>
+    Find Your <span>Home Kenya</span>
+  </a>
+  <div class="nav-links">
+    <a href="{% url 'landlords:login' %}" class="btn-nav btn-outline">List Property</a>
+    <a href="{% url 'tenants:browse' %}" class="btn-nav btn-primary">Browse Houses</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="dot"></div>
+      Nakuru's #1 House Hunting Platform
+    </div>
+    <h1>Find Your Perfect Home in <em>Nakuru</em></h1>
+    <p class="hero-sub">
+      Thousands of people move to Nakuru every month. We connect them directly with landlords — no agents, no hidden fees, just the home you need.
+    </p>
+    <div class="hero-actions">
+      <a href="{% url 'tenants:browse' %}" class="btn-hero btn-hero-primary">
+        <i class="fas fa-search"></i> Start House Hunting
+      </a>
+      <a href="{% url 'landlords:register' %}" class="btn-hero btn-hero-ghost">
+        <i class="fas fa-building"></i> List My Property
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">{{ total_listings }}+</div>
+        <div class="stat-label">Active Listings</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Verified Landlords</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">KSh 100</div>
+        <div class="stat-label">One-time Access</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating preview cards -->
+  <div class="hero-visual">
+    <div class="preview-card">
+      <div class="preview-card-tag">2 Bedroom</div>
+      <h4>Modern Apartment</h4>
+      <p class="preview-card-loc"><i class="fas fa-map-marker-alt"></i>Milimani, Nakuru</p>
+      <div class="preview-card-price">KSh 18,000 <span>/ month</span></div>
+    </div>
+    <div class="preview-card card-blur">
+      <div class="preview-card-tag">Bedsitter</div>
+      <h4>Cozy Studio Unit</h4>
+      <p class="preview-card-loc"><i class="fas fa-map-marker-alt"></i>Section 58, Nakuru</p>
+      <div class="preview-card-price">KSh 7,500 <span>/ month</span></div>
+    </div>
+    <div class="preview-card card-blur">
+      <div class="preview-card-tag">1 Bedroom</div>
+      <h4>Executive Flat</h4>
+      <p class="preview-card-loc"><i class="fas fa-map-marker-alt"></i>Lanet, Nakuru</p>
+      <div class="preview-card-price">KSh 12,000 <span>/ month</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-grid">
+    <div>
+      <div class="section-label reveal">How It Works</div>
+      <h2 class="section-title reveal">Simple. Fast. Affordable.</h2>
+      <p class="section-sub reveal">We cut out the middlemen. You deal directly with landlords and find a home in minutes, not weeks.</p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>Create your free account</h4>
+            <p>Sign up with your email and phone number in under 60 seconds.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Pay once via M-Pesa (KSh {{ TENANT_FEE }})</h4>
+            <p>A single, one-time payment unlocks lifetime access to all listings.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Browse & contact landlords directly</h4>
+            <p>Search by house type, location, or price. Call or WhatsApp landlords instantly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="how-visual reveal">
+      <div class="how-visual-title"><i class="fas fa-mobile-alt" style="color:var(--cyan);margin-right:8px;"></i>M-Pesa Payment Flow</div>
+      <div class="flow-item"><span class="flow-icon"><i class="fas fa-user"></i></span> You subscribe for KSh {{ TENANT_FEE }}</div>
+      <div class="flow-arrow"><i class="fas fa-chevron-down"></i></div>
+      <div class="flow-item"><span class="flow-icon"><i class="fas fa-mobile-alt"></i></span> M-Pesa prompt sent to your phone</div>
+      <div class="flow-arrow"><i class="fas fa-chevron-down"></i></div>
+      <div class="flow-item"><span class="flow-icon"><i class="fas fa-key"></i></span> Enter your M-Pesa PIN</div>
+      <div class="flow-arrow"><i class="fas fa-chevron-down"></i></div>
+      <div class="flow-item"><span class="flow-icon"><i class="fas fa-check-circle"></i></span> Payment confirmed instantly</div>
+      <div class="flow-arrow"><i class="fas fa-chevron-down"></i></div>
+      <div class="flow-item" style="border-color:var(--cyan);background:rgba(0,229,255,0.08);">
+        <span class="flow-icon"><i class="fas fa-unlock-alt"></i></span>
+        <strong style="color:var(--cyan);">Full access unlocked!</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div style="text-align:center;margin-bottom:8px;">
+    <div class="section-label reveal" style="display:inline-flex;">Why Choose Us</div>
+  </div>
+  <h2 class="section-title reveal" style="text-align:center;">Everything You Need to Find a Home</h2>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon"><i class="fas fa-ban"></i></div>
+      <h3>Zero Agent Fees</h3>
+      <p>No brokers, no commissions, no surprises. You talk directly to the person who owns the house.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon"><i class="fas fa-images"></i></div>
+      <h3>Real Photos & Directions</h3>
+      <p>Every listing has multiple photos, the exact address, and step-by-step directions to find the property.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon"><i class="fas fa-search"></i></div>
+      <h3>Smart Search & Filter</h3>
+      <p>Filter by bedsitter, 1-bedroom, 2-bedroom and more. Set a max price and find exactly what fits your budget.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon"><i class="fas fa-heart"></i></div>
+      <h3>Save Your Favourites</h3>
+      <p>Bookmark properties you love and come back to compare them anytime without losing track.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon"><i class="fas fa-whatsapp fab"></i></div>
+      <h3>Direct WhatsApp Contact</h3>
+      <p>One tap to open a WhatsApp chat with the landlord. Ask questions, schedule a viewing instantly.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+      <h3>Verified Listings</h3>
+      <p>Every property is reviewed and approved before it goes live. No scams, no ghost listings.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LISTINGS PREVIEW (blurred teaser) -->
+{% if sample_properties %}
+<section class="preview" id="listings">
+  <div class="preview-header reveal">
+    <div>
+      <div class="section-label">Live Listings</div>
+      <h2 class="section-title">{{ total_listings }}+ Homes Available Right Now</h2>
+    </div>
+    <a href="{% url 'tenants:browse' %}" class="btn-nav btn-primary">Unlock All Listings</a>
+  </div>
+  <div class="listings-grid">
+    {% for prop in sample_properties %}
+    <div class="listing-card reveal">
+      <div class="listing-img">
+        {% with main_photo=prop.get_main_photo %}
+          {% if main_photo %}
+            <img src="{{ main_photo.image.url }}" alt="{{ prop.title }}"/>
+          {% else %}
+            <i class="fas fa-building"></i>
+          {% endif %}
+        {% endwith %}
+        {% if forloop.counter > 2 %}
+        <div class="listing-blur-overlay">
+          <i class="fas fa-lock"></i>
+          <span>Subscribe to view</span>
+        </div>
+        {% endif %}
+      </div>
+      <div class="listing-info">
+        <div class="listing-type">{{ prop.get_property_type_display }}</div>
+        <h4>{{ prop.title }}</h4>
+        <p class="listing-loc"><i class="fas fa-map-marker-alt"></i>{{ prop.location }}</p>
+        <div class="listing-price">KSh {{ prop.price|floatformat:0 }} <span>/ month</span></div>
+      </div>
+      <div class="lock-badge"><i class="fas fa-lock"></i> Subscribe</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div style="text-align:center;margin-top:48px;">
+    <a href="{% url 'tenants:browse' %}" class="btn-hero btn-hero-primary" style="display:inline-flex;">
+      <i class="fas fa-unlock-alt"></i> Unlock All {{ total_listings }}+ Listings for KSh {{ TENANT_FEE }}
+    </a>
+  </div>
+</section>
+{% endif %}
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div style="text-align:center;">
+    <div class="section-label reveal" style="display:inline-flex;">Simple Pricing</div>
+    <h2 class="section-title reveal" style="text-align:center;">One Payment. Full Access. Forever.</h2>
+    <p class="section-sub reveal" style="text-align:center;margin:0 auto;">No subscriptions, no monthly fees, no hidden costs.</p>
+  </div>
+  <div class="pricing-grid">
+    <!-- Tenant card -->
+    <div class="price-card featured reveal">
+      <div class="price-badge">Most Popular</div>
+      <div class="price-icon"><i class="fas fa-search-location"></i></div>
+      <div class="price-title">House Hunter</div>
+      <div class="price-amount">KSh {{ TENANT_FEE }}<small>/once</small></div>
+      <p class="price-desc">Pay once, access every listing — forever. No renewal, no monthly fee.</p>
+      <ul class="price-features">
+        <li><i class="fas fa-check"></i> Browse all {{ total_listings }}+ listings</li>
+        <li><i class="fas fa-check"></i> Full photos & directions</li>
+        <li><i class="fas fa-check"></i> Direct landlord contacts</li>
+        <li><i class="fas fa-check"></i> Search & filter by type</li>
+        <li><i class="fas fa-check"></i> Save favourite properties</li>
+        <li><i class="fas fa-check"></i> New listings added daily</li>
+      </ul>
+      <a href="{% url 'tenants:register' %}" class="btn-price btn-price-primary">Get Started Now</a>
+    </div>
+    <!-- Landlord card -->
+    <div class="price-card reveal">
+      <div class="price-icon"><i class="fas fa-building"></i></div>
+      <div class="price-title">Landlord / Property Owner</div>
+      <div class="price-amount">KSh {{ LANDLORD_FEE }}<small>/once</small></div>
+      <p class="price-desc">List your apartments once and get contacted by thousands of house hunters.</p>
+      <ul class="price-features">
+        <li><i class="fas fa-check"></i> Unlimited property listings</li>
+        <li><i class="fas fa-check"></i> Upload up to 10 photos each</li>
+        <li><i class="fas fa-check"></i> Add directions & map links</li>
+        <li><i class="fas fa-check"></i> Edit listings anytime</li>
+        <li><i class="fas fa-check"></i> Direct tenant enquiries</li>
+        <li><i class="fas fa-check"></i> No recurring fees</li>
+      </ul>
+      <a href="{% url 'landlords:register' %}" class="btn-price btn-price-ghost">List My Property</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-inner reveal">
+    <h2>Your Next Home is Waiting in Nakuru</h2>
+    <p>Join hundreds of people who found their home without paying a single agent. Fast, simple, and affordable — that's the Find Your Home Kenya promise.</p>
+    <div class="cta-actions">
+      <a href="{% url 'tenants:browse' %}" class="btn-hero btn-hero-primary">
+        <i class="fas fa-search"></i> Start Hunting — KSh {{ TENANT_FEE }}
+      </a>
+      <a href="{% url 'tenants:login' %}" class="btn-hero btn-hero-ghost">
+        <i class="fas fa-sign-in-alt"></i> Already have an account?
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Find Your <span>Home Kenya</span></div>
+  <p>© 2025 Find Your Home Kenya. Built for Nakuru.</p>
+  <div class="footer-links">
+    <a href="{% url 'landlords:register' %}">For Landlords</a>
+    <a href="{% url 'tenants:register' %}">For Tenants</a>
+    <a href="{% url 'tenants:login' %}">Login</a>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal animation
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

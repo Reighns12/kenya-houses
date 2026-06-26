@@ -1,0 +1,57 @@
+{% extends 'tenants/base.html' %}
+{% block title %}Saved Properties – Find Your Home Kenya{% endblock %}
+{% block page_title %}Saved Properties{% endblock %}
+{% block content %}
+{% if saved %}
+<div style="margin-bottom:20px;color:var(--white-40);font-size:0.88rem;">
+  <strong style="color:var(--white);">{{ saved|length }}</strong> saved propert{{ saved|length|pluralize:"y,ies" }}
+</div>
+<div class="prop-grid">
+  {% for item in saved %}{% with prop=item.property %}
+  <div style="position:relative;">
+    <a href="{% url 'tenants:property_detail' prop.id %}" class="prop-card">
+      <div class="prop-img">
+        {% with main=prop.get_main_photo %}
+          {% if main %}<img src="{{ main.image.url }}" alt="{{ prop.title }}"/>
+          {% else %}<i class="fas fa-building"></i>{% endif %}
+        {% endwith %}
+      </div>
+      <div class="prop-body">
+        <div class="prop-tag">{{ prop.get_property_type_display }}</div>
+        <div class="prop-title">{{ prop.title }}</div>
+        <div class="prop-loc"><i class="fas fa-map-marker-alt"></i>{{ prop.location }}</div>
+        <div class="prop-price">KSh {{ prop.price|floatformat:0 }} <span>/ month</span></div>
+        <div style="font-size:0.75rem;color:var(--white-40);margin-top:6px;">Saved {{ item.saved_at|date:"d M Y" }}</div>
+      </div>
+    </a>
+    <button class="save-btn saved" data-id="{{ prop.id }}" data-url="{% url 'tenants:toggle_save' prop.id %}"
+      title="Remove from saved"
+      style="position:absolute;top:12px;right:12px;background:rgba(5,13,26,0.85);
+             border:1px solid var(--border);border-radius:8px;padding:7px 10px;
+             cursor:pointer;color:#ff6b6b;">
+      <i class="fas fa-heart"></i>
+    </button>
+  </div>
+  {% endwith %}{% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align:center;padding:60px;">
+  <i class="fas fa-heart" style="font-size:2.5rem;color:var(--white-40);margin-bottom:16px;display:block;"></i>
+  <h3 style="font-family:'Syne',sans-serif;margin-bottom:8px;">No saved properties yet</h3>
+  <p style="color:var(--white-40);font-size:0.88rem;margin-bottom:24px;">Browse listings and tap the heart icon to save properties you like.</p>
+  <a href="{% url 'tenants:home' %}" style="padding:12px 32px;border-radius:50px;background:var(--cyan);color:var(--navy);font-weight:700;text-decoration:none;font-size:0.9rem;">Browse Listings</a>
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+<script>
+document.querySelectorAll('.save-btn').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const res = await fetch(btn.dataset.url, {method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}','Content-Type':'application/json'}});
+    const data = await res.json();
+    if (!data.saved) btn.closest('div[style*="position:relative"]').remove();
+  });
+});
+</script>
+{% endblock %}

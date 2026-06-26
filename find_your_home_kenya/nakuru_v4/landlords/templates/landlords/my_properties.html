@@ -1,0 +1,66 @@
+{% extends 'landlords/base.html' %}
+{% block title %}My Listings – Find Your Home Kenya{% endblock %}
+{% block page_title %}My Listings{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+  <div style="color:var(--white-40);font-size:0.88rem;"><strong style="color:var(--white);">{{ properties|length }}</strong> listing{{ properties|length|pluralize }}</div>
+  <a href="{% url 'landlords:post_property' %}" style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:50px;background:var(--cyan);color:var(--navy);font-weight:700;text-decoration:none;font-size:0.88rem;">
+    <i class="fas fa-plus"></i> Post New Property
+  </a>
+</div>
+{% if properties %}
+<div class="prop-grid">
+  {% for prop in properties %}
+  <div class="prop-card" style="display:block;position:relative;padding:0;">
+    <div class="prop-img">
+      {% with main=prop.get_main_photo %}
+        {% if main %}<img src="{{ main.image.url }}" alt="{{ prop.title }}"/>
+        {% else %}<i class="fas fa-building"></i>{% endif %}
+      {% endwith %}
+    </div>
+    <div style="position:absolute;top:12px;left:12px;">
+      {% if prop.is_approved %}
+      <span style="background:rgba(0,229,255,0.15);color:var(--cyan);border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;backdrop-filter:blur(4px);">
+        <i class="fas fa-check-circle"></i> Live
+      </span>
+      {% else %}
+      <span style="background:rgba(255,200,0,0.15);color:#ffc800;border:1px solid rgba(255,200,0,0.3);padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;backdrop-filter:blur(4px);">
+        <i class="fas fa-clock"></i> Pending Approval
+      </span>
+      {% endif %}
+    </div>
+    <div class="prop-body">
+      <div class="prop-tag">{{ prop.get_property_type_display }}</div>
+      <div class="prop-title">{{ prop.title }}</div>
+      <div class="prop-loc"><i class="fas fa-map-marker-alt"></i>{{ prop.location }}</div>
+      <div class="prop-price">KSh {{ prop.price|floatformat:0 }} <span>/ month</span></div>
+      <div style="font-size:0.75rem;color:var(--white-40);margin-top:6px;"><i class="fas fa-eye" style="margin-right:4px;"></i>{{ prop.views_count }} views &nbsp;·&nbsp; Posted {{ prop.created_at|date:"d M Y" }}</div>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <a href="{% url 'landlords:edit_property' prop.id %}" style="flex:1;text-align:center;padding:9px;border-radius:10px;background:var(--white-10);border:1px solid var(--border);color:var(--white-70);text-decoration:none;font-size:0.82rem;font-weight:600;">
+          <i class="fas fa-edit"></i> Edit
+        </a>
+        <button onclick="confirmDelete({{ prop.id }},'{{ prop.title|escapejs }}')" style="flex:1;padding:9px;border-radius:10px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff6b6b;cursor:pointer;font-size:0.82rem;font-weight:600;">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% for prop in properties %}
+<form id="del-{{ prop.id }}" method="post" action="{% url 'landlords:delete_property' prop.id %}" style="display:none;">{% csrf_token %}</form>
+{% endfor %}
+{% else %}
+<div class="card" style="text-align:center;padding:60px;">
+  <i class="fas fa-home" style="font-size:2.5rem;color:var(--white-40);margin-bottom:16px;display:block;"></i>
+  <h3 style="font-family:'Syne',sans-serif;margin-bottom:8px;">No listings yet</h3>
+  <p style="color:var(--white-40);font-size:0.88rem;margin-bottom:24px;">Post your first property to start reaching house hunters.</p>
+  <a href="{% url 'landlords:post_property' %}" style="padding:12px 32px;border-radius:50px;background:var(--cyan);color:var(--navy);font-weight:700;text-decoration:none;font-size:0.9rem;display:inline-block;"><i class="fas fa-plus" style="margin-right:8px;"></i>Post Property</a>
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+<script>
+function confirmDelete(id,title){if(confirm('Delete "'+title+'"? This cannot be undone.')){document.getElementById('del-'+id).submit();}}
+</script>
+{% endblock %}
